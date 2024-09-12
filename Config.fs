@@ -3,6 +3,7 @@
 open Atlassian.Jira
 open System.ComponentModel
 open ConsoleUtils.ConsoleUtils
+open System.Diagnostics
 
 [<AutoOpen>]
 module Config =
@@ -10,6 +11,13 @@ module Config =
     let baseUrl = c.["JiraURL"]
     let username = c.["JiraUser"]
     let password = c.["JiraApiToken"]
+
+    [<DebuggerHidden>]
+    let inline Tee fnct obj =
+        fnct obj
+        obj
+    let inline (|&) obj fnct = Tee fnct obj
+    let CIC (str: string) (str2: string) = str.ToLower() = str2.ToLower()
 
     let apiUrl = $"{baseUrl}/rest/api/3"
     
