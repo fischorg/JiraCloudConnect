@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <appSettings>
+    <add key="JiraURL" value="https://YOURSITE.atlassian.net" />
+    <add key="JiraUser" value="YOUR_ACCOUNT" />
+    <add key="JiraApiToken" value="YOUR_API_TOKEN" />
+  </appSettings>
+</configuration>
