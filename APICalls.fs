@@ -56,7 +56,7 @@ module APICalls =
                 list |> List.rev
         _callUntilAll 0 []
 
-    let GetAllProjects () = client.Projects.GetProjectsAsync() |> call
+    let GetAllProjects () = client.Projects.GetProjectsAsync() |> call |> Seq.toList
 
     let GetProjectByKey (key: string) =
         GetAllProjects()

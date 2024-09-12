@@ -27,4 +27,6 @@
     <Folder Include="Samples\" />
   </ItemGroup>
 
+  <ItemGroup />
+
 </Project>

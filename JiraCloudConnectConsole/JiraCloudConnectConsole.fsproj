@@ -6,7 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="app.config" />
+    <None Include="app.config.sample" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ConsoleUtils\ConsoleUtils.fsproj" />
+    <ProjectReference Include="..\JiraCloudConnect.fsproj" />
   </ItemGroup>
 
 </Project>
