@@ -9,8 +9,10 @@
     <Content Include="samples\WebhookIssueEvent.json" />
     <Compile Include="Config.fs" />
     <Compile Include="APICalls.fs" />
+    <Compile Include="JQL.fs" />
     <Compile Include="Webhooks.fs" />
     <Compile Include="CustomFields.fs" />
+    <Compile Include="JiraExtensions.fs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,9 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Project.fs" />
+    <Compile Include="Issue.fs" />
     <Folder Include="Samples\" />
   </ItemGroup>
-
-  <ItemGroup />
 
 </Project>

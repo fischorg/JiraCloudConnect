@@ -1,4 +1,4 @@
-﻿namespace JiraCloudConnect
+﻿namespace JCC
 
 open Config
 open ConsoleUtils.ConsoleUtils
@@ -6,10 +6,14 @@ open Atlassian.Jira
 open RestSharp
 open Newtonsoft.Json
 
+[<AutoOpen>]
 module APICalls =
 
     let client = GetClient ()
     let restClient = client.RestClient.RestSharpClient
+    let call fn = 
+        try Async.AwaitTask(fn) |> Async.RunSynchronously |> Ok
+        with ex -> ex.Message |> FailedToRunTask |> Error
 
     let customFieldExistOnIssue (issue: Issue) (cf: string) =
         issue.CustomFields
@@ -22,60 +26,14 @@ module APICalls =
         if not (customFieldExistOnIssue issue cfName) then
             issue.CustomFields.Add(cfName, cfValue) |> ignore
 
-    let StartNewIssue (key: string) = client.CreateIssue(key)
-
-    let CreateJiraIssueTask (key: string) (issue: Issue) = 
-        issue.SaveChangesAsync().Wait()
-
-    let CreateJiraIssueBase fn (prefix: string) (msg: string) (e: 'dbRecord) =
-        out msg
-        try
-            let issue = client.CreateIssue(prefix)
-            fn e issue
-            printfn $"Creating {issue.Description}..."
-            issue.SaveChangesAsync().Wait()
-            out "Success"
-            Ok()
-        with ex -> 
-            out ex.Message
-            failwith ex.Message
-            //StandardErrors.AnUnexpectedErrorOccurredDetailed("Failed to add object to Jira", ex) |> Error
-
-    let call fn = Async.AwaitTask(fn) |> Async.RunSynchronously
-
-    let rec CallUntilAll (jql: string) : Issue list =
-        out $"CAlling JQL query: {jql}"
-        let rec _callUntilAll startAt (list: Issue list) =
-            out $"Issue list has %i{list.Length} entries."
-            let queryResult = client.Issues.GetIssuesFromJqlAsync(jql, 100, startAt) |> call
-            let x = queryResult |> Seq.toList
-            if x.Length > 0 then
-                _callUntilAll (startAt+x.Length) (x @ list)
-            else
-                out $"Found {list.Length} issues. Returning."
-                list |> List.rev
-        _callUntilAll 0 []
-
-    let GetAllProjects () = client.Projects.GetProjectsAsync() |> call |> Seq.toList
-
-    let GetProjectByKey (key: string) =
-        GetAllProjects()
-        |> Seq.where (fun p -> p.Key = key)
-        |> Seq.toList
-
-    let GetLocations () = CallUntilAll "project = loc and status = active"
-        //query {
-        //    for i in client.Issues.Queryable do
-        //        where (i.Project = "Locations")
-        //        select i
-        //}
-
-    let GetEmployees () = CallUntilAll "project = emp and status = active"
+    
 
     let PrintCustomFieldsOnIssue key =
-        let issue = client.Issues.GetIssueAsync(key) |> call
-        issue.CustomFields
-        |> Seq.iter (fun cf -> printfn $"[{cf.Id}] {cf.Name}")
+        client.Issues.GetIssueAsync(key) 
+        |> call
+        |> function
+        | Ok i -> i.CustomFields |> Seq.iter (fun cf -> printfn $"[{cf.Id}] {cf.Name}")
+        | Error _ -> () // TODO handle error
 
     let UpsertCustomFieldOnIssue (issue: Issue) propName propValue : DirtLevel =
         out $"Checking '{propName}'"
@@ -107,8 +65,11 @@ module APICalls =
 
     let TransitionIssueUsingKey  (issueKey: string) (workflowActionName: string) =
         out $"Transitioning {issueKey} to {workflowActionName}"
-        let issue = client.Issues.GetIssueAsync(issueKey) |> call
-        TransitionIssue issue workflowActionName
+        client.Issues.GetIssueAsync(issueKey) 
+        |> call
+        |> function
+        | Ok i -> TransitionIssue i workflowActionName
+        | Error _ -> () // TODO handle error
 
     let TransitionIssueToInactive (issue: Issue) = TransitionIssue issue "Inactive"
 
@@ -170,15 +131,4 @@ module APICalls =
         with ex -> failwith ex.Message
             //StandardErrors.AnUnexpectedErrorOccurredAsMessage "Call to API failed.\n" |> Error
 
-    let AddCommentToIssue (issueKey: string) (comment: string) =
-        out $"Adding comment to {issueKey}"
-        let issue = client.Issues.GetIssueAsync(issueKey) |> call
-        let c = new Comment()
-        c.Body <- comment
-        c.Author <- "author"
-        try
-            issue.AddCommentAsync(c) |> call
-            |> Ok
-        with ex ->
-            //Error ex
-            raise ex
+    

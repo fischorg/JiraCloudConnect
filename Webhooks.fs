@@ -1,4 +1,4 @@
-﻿namespace JiraCloudConnect
+﻿namespace JCC
 
 open FSharp.Core
 open FSharp.Data

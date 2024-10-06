@@ -1,4 +1,4 @@
-﻿namespace JiraCloudConnect
+﻿namespace JCC
 
 open APICalls
 

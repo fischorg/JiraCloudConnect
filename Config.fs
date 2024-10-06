@@ -1,4 +1,4 @@
-﻿namespace JiraCloudConnect
+﻿namespace JCC
 
 open Atlassian.Jira
 open System.ComponentModel
@@ -11,6 +11,27 @@ module Config =
     let baseUrl = c.["JiraURL"]
     let username = c.["JiraUser"]
     let password = c.["JiraApiToken"]
+
+    type PossibleErrors = 
+        | FailedToRunTask of string
+        | FailedToGetIssue of PossibleErrors
+        | FailedToGetIssues of PossibleErrors
+        | FailedToGetProjects of PossibleErrors
+        | FailedToAddComment of PossibleErrors
+        | FailedToCreateIssue of PossibleErrors
+        static member Stringify =
+            function
+            | FailedToRunTask s -> $"Failed to run task: %s{s}"
+            | FailedToAddComment e -> $"Failed to add comment: %s{e |> PossibleErrors.Stringify}"
+            | FailedToGetIssue e -> $"Failed to get issue: %s{e |> PossibleErrors.Stringify}"
+            | FailedToGetIssues e -> $"Failed to get issues: %s{e |> PossibleErrors.Stringify}"
+            | FailedToGetProjects e -> $"Failed to get projects: %s{e |> PossibleErrors.Stringify}"
+            | FailedToCreateIssue e -> $"Failed to create issue: %s{e |> PossibleErrors.Stringify}"
+    
+    let myError = FailedToAddComment (FailedToRunTask "oh no task Failed")
+    let myError2 = FailedToGetIssue ( FailedToAddComment (FailedToRunTask "oh no task Failed"))
+    let x = PossibleErrors.Stringify myError //Failed to add comment: Failed to run task: oh no task Failed
+    let x2 = PossibleErrors.Stringify myError2 //Failed to get issue: Failed to add comment: Failed to run task: oh no task Failed
 
     [<DebuggerHidden>]
     let inline Tee fnct obj =
