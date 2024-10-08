@@ -6,9 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="samples\project.sample.json" />
     <Content Include="samples\WebhookIssueEvent.json" />
     <Compile Include="Config.fs" />
+    <Compile Include="Types.fs" />
     <Compile Include="APICalls.fs" />
+    <Compile Include="Rest.fs" />
     <Compile Include="JQL.fs" />
     <Compile Include="Webhooks.fs" />
     <Compile Include="CustomFields.fs" />

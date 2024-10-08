@@ -1,4 +1,4 @@
-﻿namespace JCC
+﻿namespace JiraCloudConnect
 
 open Config
 open ConsoleUtils.ConsoleUtils
@@ -25,8 +25,6 @@ module APICalls =
     let addFieldToIssue (cfName: string) (cfValue: string) (issue: Issue) =
         if not (customFieldExistOnIssue issue cfName) then
             issue.CustomFields.Add(cfName, cfValue) |> ignore
-
-    
 
     let PrintCustomFieldsOnIssue key =
         client.Issues.GetIssueAsync(key) 

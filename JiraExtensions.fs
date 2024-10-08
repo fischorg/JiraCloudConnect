@@ -1,4 +1,4 @@
-﻿namespace JCC
+﻿namespace JiraCloudConnect
 
 open Atlassian.Jira
 
