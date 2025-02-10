@@ -13,6 +13,7 @@
     <Compile Include="Types.fs" />
     <Compile Include="APICalls.fs" />
     <Compile Include="Rest.fs" />
+    <Compile Include="OAuth.fs" />
     <Compile Include="JQL.fs" />
     <Compile Include="Webhooks.fs" />
     <Compile Include="CustomFields.fs" />
