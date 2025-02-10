@@ -7,7 +7,7 @@ open System
 [<AutoOpen>]
 module Types =     
     type ProjectResponse = JsonProvider<"c:\dev\JiraCloudConnect\samples\project.sample.json">
-
+    type CreatedIssueResponseJson = JsonProvider<"c:\dev\JiraCloudConnect\samples\issue.created.response.json">
 
     // Helper types
     type AvatarUrls = 
@@ -74,6 +74,13 @@ module Types =
             Self : string
         }
 
+    and CreatedIssueResponse = 
+        {
+            Id : string
+            Key : string
+            Self : string
+        }
+
     let BuildProject (project: ProjectResponse.Root) = 
         { 
             AssigneeType = project.AssigneeType
@@ -132,4 +139,13 @@ module Types =
             Style = project.Style
             Url = project.Url
         }
+
+    let private buildCreatedIssueResponse (response: CreatedIssueResponseJson.Root) : CreatedIssueResponse = 
+        { 
+            Id = response.Id
+            Key = response.Key
+            Self = response.Self
+        }
+
     let ParseProject (json: string) = ProjectResponse.Parse(json)
+    let ParseCreatedIssueResponse (json: string) = CreatedIssueResponseJson.Parse(json) |> buildCreatedIssueResponse

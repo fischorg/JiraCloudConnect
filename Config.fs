@@ -4,6 +4,8 @@ open Atlassian.Jira
 open System.ComponentModel
 open ConsoleUtils.ConsoleUtils
 open System.Diagnostics
+open RestSharp
+open FSharp.Data
 
 [<AutoOpen>]
 module Config =
@@ -51,6 +53,13 @@ module Config =
             |> Async.AwaitTask 
             |> Async.RunSynchronously 
             |> Seq.toList
+        //let _projects = 
+        //    let cl = client.RestClient.RestSharpClient
+        //    let r = RestRequest("https://fargohope.atlassian.net/rest/api/3/project")
+        //    let res = cl.Get(r)
+        //    match res.IsSuccessful with
+        //    | true -> Ok()
+        //    | false -> failwith res.Content
         out $"Connected. {projects.Length} projects found."
         client
 

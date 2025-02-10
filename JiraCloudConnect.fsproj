@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Samples\issue.created.response.json" />
     <Content Include="samples\project.sample.json" />
     <Content Include="samples\WebhookIssueEvent.json" />
     <Compile Include="Config.fs" />
@@ -31,7 +32,6 @@
   <ItemGroup>
     <Compile Include="Project.fs" />
     <Compile Include="Issue.fs" />
-    <Folder Include="Samples\" />
   </ItemGroup>
 
 </Project>

@@ -2,8 +2,18 @@
 
 open Atlassian.Jira
 open ConsoleUtils.ConsoleUtils
+open Atlassian.Jira.Remote
+open Newtonsoft.Json
+open RestSharp
 
 module Issue = 
+    let private getJiraUser reporterId =
+        client.Users.GetUserAsync(reporterId) 
+        |> call
+        |> function
+        | Ok u -> u
+        | Error _ -> failwith "Failed to get user."
+
     let InitIssue (projectKey: string) (summary: string) = 
         let issue = client.CreateIssue(projectKey)
         issue.Summary <- summary
@@ -16,6 +26,48 @@ module Issue =
         issue.Summary <- summary
         issue.Description <- description
         issue.SaveChanges()
+
+    let CreateQuickIssue2 (projectKey: string) (issueTypeId: string) (summary: string) (description: string) (reporter: string) = 
+        let client = Config.GetClient()
+        let issue = client.CreateIssue(projectKey)
+        issue.Type <- new IssueType(issueTypeId)
+        issue.Summary <- summary
+        issue.Description <- description
+        issue.SaveChanges()
+        issue
+
+    let Rest_CreateIssue (projectKey: string) (issueTypeId: string) (summary: string) (description: string) (reporterId: string) =
+        let payload =
+                {| 
+                    fields = 
+                        {| 
+                            summary = summary
+                            project = 
+                                {| 
+                                    key = projectKey
+                                |}
+                            issuetype = 
+                                {| 
+                                    id = issueTypeId
+                                |}
+                            reporter = 
+                                {| 
+                                    id = reporterId
+                                |}
+                        |}
+                |}
+        let json = JsonConvert.SerializeObject(payload)
+        let r = RestRequest($"{Config.apiUrl}/issue")
+        let rr = r.AddJsonBody(json)
+        rr.Method <- Method.POST
+        let res = restClient.Post(rr)
+        match res.IsSuccessful with
+        | true -> 
+            res.Content
+            |> ParseCreatedIssueResponse
+            |> Ok
+        | false -> failwith res.Content
+            // StandardErrors.AnUnexpectedErrorOccurredAsMessage "Call successful but API said no while trying to create an issue.\n" |> Error
 
     let UpdateJiraIssue (issue: Issue) = 
         issue.SaveChangesAsync().Wait()
@@ -60,3 +112,14 @@ module Issue =
                 issue.AddCommentAsync(comment) |> call
             )
         |> Result.mapError FailedToAddComment
+
+    let Rest_AddAttachmentToIssue (key: string) (path: string) =
+        let r = RestRequest($"{Config.apiUrl}/issue/{key}/attachments")
+        r.AddHeader("X-Atlassian-Token", "no-check") |> ignore
+        r.AddHeader("Content-Type", "multipart/form-data") |> ignore
+        r.AddHeader("file", path) |> ignore
+        r.AddFile("file", path) |> ignore
+        let res = restClient.Post(r)
+        match res.IsSuccessful with
+        | true -> Ok()
+        | false -> failwith res.Content
