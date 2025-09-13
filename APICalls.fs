@@ -1,7 +1,7 @@
 ﻿namespace JiraCloudConnect
 
 open Config
-open ConsoleUtils.ConsoleUtils
+open JFSharpConsoleUtils.ConsoleUtils
 open Atlassian.Jira
 open RestSharp
 open Newtonsoft.Json

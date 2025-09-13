@@ -20,13 +20,11 @@
   <ItemGroup>
     <PackageReference Include="Atlassian.SDK" Version="13.0.0" />
     <PackageReference Include="FSharp.Data" Version="6.4.0" />
+    <PackageReference Include="JFSharpConsoleUtils" Version="1.0.4" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Project.fs" />
     <Compile Include="Issue.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ConsoleUtils\ConsoleUtils.fsproj" />
   </ItemGroup>
 </Project>

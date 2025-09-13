@@ -1,7 +1,7 @@
 ﻿namespace JiraCloudConnect
 
 open Atlassian.Jira
-open ConsoleUtils.ConsoleUtils
+open JFSharpConsoleUtils.ConsoleUtils
 
 module JQL = 
 

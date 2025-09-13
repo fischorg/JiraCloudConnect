@@ -2,7 +2,6 @@
 
 open Atlassian.Jira
 open System.ComponentModel
-open ConsoleUtils.ConsoleUtils
 open System.Diagnostics
 open RestSharp
 open FSharp.Data
@@ -60,7 +59,7 @@ module Config =
         //    match res.IsSuccessful with
         //    | true -> Ok()
         //    | false -> failwith res.Content
-        out $"Connected. {projects.Length} projects found."
+        printfn $"Connected. {projects.Length} projects found."
         client
 
     [<DisplayName("Phone Number")>]
